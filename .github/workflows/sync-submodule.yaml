@@ -69,6 +69,12 @@ jobs:
           # Store the PAT in a file that can be accessed by the
           # GitHub CLI.
 
+          echo "${{ secrets.ACCESS_TOKEN }}" > token.txt
+
+          # Authorize GitHub CLI for the current repository and
+          # create a pull-requests containing the updates.
+          gh auth login --with-token < token.txt
+
           # Authorize GitHub CLI for the current repository and
           # create a pull-requests containing the updates.
           # gh auth login --with-token < token.txt
