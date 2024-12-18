@@ -5,14 +5,14 @@ on:
   push:
     branches:
       - main
-    tags-ignore:
-      - "**"
 
-name: on-commit-to-main
+name: on-commit-to-master
 
 jobs:
   send-pull-requests:
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_STEP_DEBUG: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
           git clone \
             --depth=1 \
             --branch=master \
-            https://github.com/$REPOSITORY \
+            https://wawa0210:${{ secrets.ACCESS_TOKEN }}@github.com/$REPOSITORY \
             $FOLDER
 
           cd $FOLDER
