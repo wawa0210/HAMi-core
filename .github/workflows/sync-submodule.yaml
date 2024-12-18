@@ -82,4 +82,4 @@ jobs:
             --body "" \
             --title "chore: update scripts to $LATEST_TAG" \
             --head "$BRANCH_NAME" \
-            --base "main"
+            --base "master"
