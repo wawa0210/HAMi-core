@@ -41,7 +41,7 @@ jobs:
           git clone \
             --depth=1 \
             --branch=master \
-            https://some-user:${{ secrets.ACCESS_TOKEN }}@github.com/$REPOSITORY \
+            https://wawa0210:${{ secrets.ACCESS_TOKEN }}@github.com/$REPOSITORY \
             $FOLDER
 
           cd $FOLDER
