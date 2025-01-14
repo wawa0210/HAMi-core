@@ -32,7 +32,7 @@ jobs:
           JSON: ${{ toJSON(github) }}
         run: |
           LATEST_TAG=$(git describe --tags --always --abbrev=0)
-          REPOSITORY="Project-HAMi/HAMi"
+          REPOSITORY="wawa0210/HAMi"
           FOLDER="bin/$REPOSITORY"
           BRANCH_NAME="sync-submodule-$LATEST_TAG"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
@@ -69,7 +69,7 @@ jobs:
 
           git add .
           git commit -m "Update submodules to $LATEST_TAG"
-          git push origin update-submodules || echo "No changes to commit"
+          git push origin $BRANCH_NAME || echo "No changes to commit"
       
       - name: Create Pull Request in HAMi
         uses: peter-evans/create-pull-request@v4
