@@ -31,10 +31,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           JSON: ${{ toJSON(github) }}
         run: |
+          LATEST_TAG=$(git describe --tags --always --abbrev=0)
           REPOSITORY="wawa0210/HAMi"
           FOLDER="bin/$REPOSITORY"
           BRANCH_NAME="sync-submodule-$LATEST_TAG"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "FOLDER=$FOLDER" >> $GITHUB_ENV
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
           # Clone the remote repository and change working directory to the
           # folder it was cloned to.
@@ -52,9 +55,17 @@ jobs:
           JSON: ${{ toJSON(github) }}
         run: |
           cd $FOLDER
+          
+          # Setup the committers identity.
+          git config user.email "xiozhang0210@hotmail.com"
+          git config user.name "wawa0210"
+
+          # Create a new feature branch for the changes.
+          git checkout -b $BRANCH_NAME
+
           git submodule update --remote
           git add .
-          git commit -m "Update submodules"
+          git commit -m "Update submodules to $LATEST_TAG"
           git push origin update-submodules || echo "No changes to commit"
       
       - name: Create Pull Request in HAMi
