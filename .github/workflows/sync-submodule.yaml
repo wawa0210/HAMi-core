@@ -26,15 +26,15 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: Send pull-request
+      - name: Clone HAMi
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           JSON: ${{ toJSON(github) }}
         run: |
-          LATEST_TAG=$(git describe --tags --always --abbrev=0)
           REPOSITORY="wawa0210/HAMi"
           FOLDER="bin/$REPOSITORY"
           BRANCH_NAME="sync-submodule-$LATEST_TAG"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
           # Clone the remote repository and change working directory to the
           # folder it was cloned to.
@@ -46,40 +46,23 @@ jobs:
 
           cd $FOLDER
 
-          # Setup the committers identity.
-          git config user.email "xiozhang0210@hotmail.com"
-          git config user.name "wawa0210"
-
-          # Create a new feature branch for the changes.
-          git checkout -b $BRANCH_NAME
-
-          # Update the submodule to the latest version.
-
-          # git submodule add https://github.com/wawa0210/HAMi-core libvgpu
-
-          git submodule update --init --recursive
-
-          git submodule update --remote --recursive
-
-          # Commit the changes and push the feature branch to origin
+      - name: Update Submodules in HAMi
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          JSON: ${{ toJSON(github) }}
+        run: |
+          cd $FOLDER
+          git submodule update --remote
           git add .
-          git commit -m "sync git submodule to $LATEST_TAG"
-          git push origin $BRANCH_NAME
-
-          # Store the PAT in a file that can be accessed by the
-          # GitHub CLI.
-
-          echo "${{ secrets.ACCESS_TOKEN }}" > token.txt
-
-          # Authorize GitHub CLI for the current repository and
-          # create a pull-requests containing the updates.
-          gh auth login --with-token < token.txt
-
-          # Authorize GitHub CLI for the current repository and
-          # create a pull-requests containing the updates.
-          # gh auth login --with-token < token.txt
-          gh pr create \
-            --body "" \
-            --title "chore: update scripts to $LATEST_TAG" \
-            --head "$BRANCH_NAME" \
-            --base "master"
+          git commit -m "Update submodules"
+          git push origin update-submodules || echo "No changes to commit"
+      
+      - name: Create Pull Request in HAMi
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          commit-message: Update submodules
+          branch: $BRANCH_NAME
+          title: Update submodules
+          body: This PR updates the submodules to their latest versions.
+          base: main
