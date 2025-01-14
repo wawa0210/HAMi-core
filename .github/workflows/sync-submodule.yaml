@@ -32,7 +32,7 @@ jobs:
           JSON: ${{ toJSON(github) }}
         run: |
           LATEST_TAG=$(git describe --tags --always --abbrev=0)
-          REPOSITORY="wawa0210/HAMi"
+          REPOSITORY="Project-HAMi/HAMi"
           FOLDER="bin/$REPOSITORY"
           BRANCH_NAME="sync-submodule-$LATEST_TAG"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
@@ -63,7 +63,10 @@ jobs:
           # Create a new feature branch for the changes.
           git checkout -b $BRANCH_NAME
 
-          git submodule update --remote
+          git submodule update --init --recursive
+
+          git submodule update --remote --recursive
+
           git add .
           git commit -m "Update submodules to $LATEST_TAG"
           git push origin update-submodules || echo "No changes to commit"
